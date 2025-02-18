@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <sitemap>
+        <loc>https://vibrachat.netlify.app/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </sitemap>
+    <sitemap>
+        <loc>https://vibrachat.netlify.app/login.html</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </sitemap>
+</sitemapindex>

@@ -1,0 +1,1 @@
+Sitemap: https://vibrachat.netlify.app/sitemap.xml
