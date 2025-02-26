@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            height: 90%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .table-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-family: 'Yuji Mai';
+            word-wrap: break-word;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        input {
+            width: 90%;
+            padding: 5px;
+            border-radius: 5px;
+            font-family: 'Sour Gummy', cursive;
+            font-size: 1.15rem;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        if (localStorage.getItem("Admin_Logged_in") !== "True") {
+            window.location.href = "adminlogin.html";
+        }
+    </script>
+
+    <script>
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = "adminlogin.html"; // Redirect if not logged in
+            }
+        });
+    </script>
+
+    <div class="container">
+        <div class="header">
+            <h2>Admin Panel - Manage Messages</h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <a href="index.html"><button>View index.html</button></a>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                        <th>User</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="messageTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="restriction.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDy8IYzLC9Wm60CPaSAgQUj7lIsQsy3lBY",
+            authDomain: "rmcs-2d752.firebaseapp.com",
+            databaseURL: "https://rmcs-2d752-default-rtdb.firebaseio.com",
+            projectId: "rmcs-2d752",
+            storageBucket: "rmcs-2d752.firebasestorage.app",
+            messagingSenderId: "188615853008",
+            appId: "1:188615853008:web:f59c668e5d834ae1a8efd5"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const messagesRef = db.ref("chats");
+
+        function fetchMessages() {
+            messagesRef.on("value", (snapshot) => {
+                const table = document.getElementById("messageTable");
+                table.innerHTML = "";
+                snapshot.forEach((childSnapshot) => {
+                    const key = childSnapshot.key;
+                    const data = childSnapshot.val();
+                    const row = `<tr>
+                        <td><input type="text" id="msg-${key}" value="${data.text}"></td>
+                        <td>${data.user}</td>
+                        <td>
+                            <button class="edit-btn" onclick="updateMessage('${key}')">Edit</button>
+                            <button class="delete-btn" onclick="deleteMessage('${key}')">Delete</button>
+                        </td>
+                    </tr>`;
+                    table.innerHTML += row;
+                });
+            });
+        }
+
+        function updateMessage(key) {
+            const newText = document.getElementById(`msg-${key}`).value;
+            messagesRef.child(key).update({ text: newText });
+        }
+
+        function deleteMessage(key) {
+            messagesRef.child(key).remove();
+        }
+
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                localStorage.removeItem("Admin_Logged_in"); 
+                window.location.href = "adminlogin.html"; 
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+            });
+        }
+
+        fetchMessages();
+    </script>
+
+<script src="restriction.js"></script>
+</body>
+</html>

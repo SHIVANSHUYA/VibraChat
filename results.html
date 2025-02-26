@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px; }
+        h2 { margin-bottom: 20px; }
+        #results-container { max-width: 800px; margin: 0 auto; text-align: left; }
+        .user-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 15px; position: relative; }
+        pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        .delete-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; position: absolute; right: 10px; top: 10px; }
+        .delete-btn:hover { background: darkred; }
+    </style>
+</head>
+<body>
+
+    <h2>Collected Device Information</h2>
+    
+    <div id="results-container">Loading data...</div>
+
+    <script type="module">
+        // Import Firebase Modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // Firebase Configuration (Same as in your ip.html)
+        const firebaseConfig = {
+            databaseURL: "https://vibra-info-device-logger-default-rtdb.firebaseio.com/",
+    apiKey: "AIzaSyC8AndDmPHc8eDF-cQWCDY2QWUQ8Git82k",
+    authDomain: "vibra-info-device-logger.firebaseapp.com",
+    projectId: "vibra-info-device-logger",
+    storageBucket: "vibra-info-device-logger.firebasestorage.app",
+    messagingSenderId: "1060342625087",
+    appId: "1:1060342625087:web:dad47283c662612ac9998a"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Reference to the stored data
+        const deviceInfoRef = ref(database, "deviceInfo");
+
+        // Function to delete user data
+        function deleteUser(userId) {
+            const confirmDelete = confirm(`Are you sure you want to delete data for ${userId}?`);
+            if (confirmDelete) {
+                remove(ref(database, `deviceInfo/${userId}`))
+                    .then(() => alert("User data deleted successfully!"))
+                    .catch((error) => alert("Error deleting user: " + error));
+            }
+        }
+
+        // Function to display data
+        function displayData(data) {
+            const resultsContainer = document.getElementById("results-container");
+            resultsContainer.innerHTML = ""; // Clear old data
+            
+            if (!data || Object.keys(data).length === 0) {
+                resultsContainer.innerHTML = "<p>No data found.</p>";
+                return;
+            }
+
+            Object.keys(data).forEach(userId => {
+                const userInfo = data[userId];
+                const userCard = document.createElement("div");
+                userCard.classList.add("user-card");
+
+                userCard.innerHTML = `
+                    <button class="delete-btn" onclick="deleteUser('${userId}')">Delete</button>
+                    <h3>User: ${userId}</h3>
+                    <pre>${JSON.stringify(userInfo, null, 2)}</pre>
+                `;
+
+                resultsContainer.appendChild(userCard);
+            });
+        }
+
+        // Fetch data and listen for updates
+        onValue(deviceInfoRef, (snapshot) => {
+            const data = snapshot.val();
+            displayData(data);
+        }, (error) => {
+            console.error("Error fetching data:", error);
+            document.getElementById("results-container").innerHTML = "<p>Error loading data.</p>";
+        });
+
+        // Expose deleteUser function globally
+        window.deleteUser = deleteUser;
+
+    </script>
+
+<script src="restriction.js"></script>
+
+</body>
+</html>

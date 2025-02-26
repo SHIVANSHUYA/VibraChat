@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+
+    
+    <title>VibraChat | Login</title>
+    
+    <link rel="icon" href="./imgs/icon.png" type="image/x-icon">
+    <link rel="canonical" href="https://vibrachat.netlify.app/login.html">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h1 {
+            color: #b30000;
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .login-container button {
+            background-color: #b30000;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .login-container button:hover {
+            background-color: #8a0000;
+        }
+        a {
+            text-decoration: none;
+            color: #b30000;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login to VibraChat</h1>
+        <p>A site by <a href="https://github.com/shivanshuya" target="_blank">Shivanshu Yadav</a></p>
+        
+        <input type="text" id="name" placeholder="Enter your name" required>
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <input type="password" id="password" placeholder="Enter password" required>
+        
+        <button id="loginButton">Login</button>
+        <button id="logoutButton" style="display: none;">Logout</button>
+
+<br><br>
+        <a href="adminlogin.html"><p>Login as Admin</p></a>
+        
+
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDy8IYzLC9Wm60CPaSAgQUj7lIsQsy3lBY",
+            authDomain: "rmcs-2d752.firebaseapp.com",
+            databaseURL: "https://rmcs-2d752-default-rtdb.firebaseio.com",
+            projectId: "rmcs-2d752",
+            storageBucket: "rmcs-2d752.firebasestorage.app",
+            messagingSenderId: "188615853008",
+            appId: "1:188615853008:web:f59c668e5d834ae1a8efd5",
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // DOM Elements
+        const loginButton = document.getElementById("loginButton");
+        const logoutButton = document.getElementById("logoutButton");
+        const nameInput = document.getElementById("name");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+
+        // Check if the user is already logged in
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (currentUser) {
+            logoutButton.style.display = "block";
+            nameInput.style.display = "none";
+            emailInput.style.display = "none";
+            passwordInput.style.display = "none";
+            loginButton.style.display = "none";
+        }
+
+        // Login Button Action
+        loginButton.addEventListener("click", () => {
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (password !== "shivanshu") {
+                alert("Invalid password!");
+                return;
+            }
+
+            // Save user data to Firebase and localStorage
+            const userData = { name, email };
+            localStorage.setItem("currentUser", JSON.stringify(userData));
+
+            const usersRef = database.ref("users");
+            usersRef.once("value", (snapshot) => {
+                const users = snapshot.val() || {};
+                const userCount = Object.keys(users).length;
+
+                if (userCount < 900) {
+                    const userRef = usersRef.push(userData);
+                    localStorage.setItem("currentUser", JSON.stringify({ ...userData, id: userRef.key }));
+                    alert("Logged in successfully!");
+                    window.location.href = "index.html";
+                } else {
+                    alert("Maximum users reached. Try again later.");
+                }
+            });
+        });
+
+        // Logout Button Action
+        logoutButton.addEventListener("click", () => {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (currentUser && currentUser.id) {
+                const userRef = database.ref(`users/${currentUser.id}`);
+                userRef.remove()
+                    .then(() => {
+                        localStorage.removeItem("currentUser");
+                        alert("Logged out successfully!");
+                        window.location.reload();
+                    })
+                    .catch((error) => {
+                        console.error("Error removing user:", error.message);
+                        alert("Logout failed. Please try again.");
+                    });
+            } else {
+                localStorage.removeItem("currentUser");
+                alert("Logged out successfully!");
+                window.location.reload();
+            }
+        });
+    </script>
+
+
+    <script src="restriction.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="VibraChat - By Shivanshu Yadav - A modern and interactive platform to chat, connect, and stay in touch with your friends and colleagues.">
+<meta name="keywords" content="VibraChat, Chat now, We all chat v2.0,chat, messaging, VibraChat, real-time communication, online chat, user interaction, messaging app, chat platform, group chat, private chat, text messaging, social networking, communication, chat app, real-time chat, instant messaging, group chat, chat interface, live chat, video call, messaging system, secure chat, chat service, connect, network, private messaging, group messaging, chatrooms, chat application, interactive chat, user-friendly interface, modern chat, online community, virtual communication, video chat, social interaction, user privacy, secure communication, cloud-based chat, peer-to-peer chat, chat features, multimedia messaging, chat notifications, messaging system, chat platform, open-source chat, free messaging app, communication tools, chat security, user experience, virtual collaboration, instant message, video conference, online communication system, interactive messaging, text-based communication, real-time connection, personal chat, communication solution, encrypted chat, social chat, text and multimedia, social network, community chat, open chat room, anonymous chat, platform for friends, instant messaging platform, real-time notifications, messaging system integration, online interaction, communication platform, dynamic messaging, secure online chat, digital communication, virtual meeting, cloud communication, live discussion, voice messages, message synchronization, app for chat, modern communication, online group discussions, collaborative messaging, group interaction, online platform for communication, chat application development, connected messaging, user support chat, direct messaging, encrypted messaging, team chat, instant conversation, web chat app, cross-platform chat, free messaging service, virtual chat assistant, social communication platform, connect with friends, team messaging, online chat app, safe chat app, secure direct messages, interactive online communication">
+<meta name="author" content="Shivanshu Yadav">
+<meta name="robots" content="index, follow">
+<meta name="robots" content="noarchive">
+<meta property="og:title" content="VibraChat">
+<meta property="og:description" content="Join VibraChat, your ultimate platform for real-time communication, chat, and messaging. Connect with friends and colleagues now.">
+<meta property="og:image" content="https://vibrachat.netlify.app/imgs/main.png">
+<meta property="og:url" content="https://vibrachat.netlify.app/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="VibraChat">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@ShivanshuYadav">
+<meta name="twitter:title" content="VibraChat">
+<meta name="twitter:description" content="VibraChat is an interactive and secure messaging platform designed for communication, group discussions, and online collaboration.">
+<meta name="twitter:image" content="https://vibrachat.netlify.app/imgs/main.png">
+<meta name="twitter:url" content="https://vibrachat.netlify.app/">
+<link rel="canonical" href="https://vibrachat.netlify.app/">
+
+
+<title>VibraChat</title>
+
+<link rel="icon" href="./imgs/icon.png" type="image/x-icon" />
+
+<link rel="sitemap" type="application/xml" href="https://vibrachat.netlify.app/sitemap.xml" />
+
+
+
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background-color: #b30000;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .left-pane {
+            flex: 3;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .chat-box {
+            flex: 1;
+            overflow-y: auto; /* Enables vertical scrolling */
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #ffffff;
+            margin-bottom: 10px;
+            height: calc(100% - 50px); /* Takes up remaining space */
+
+            
+        }
+
+        .chat-box::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.chat-box::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.chat-box::-webkit-scrollbar-thumb {
+  background: #555555; 
+}
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            background-color: #fff;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .chat-send-button {
+            padding: 10px;
+            border: none;
+            background-color: #b30000;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .chat-send-button:hover {
+            background-color: #8a0000;
+        }
+        .right-pane {
+            flex: 1;
+            background-color: #e0e0e0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1; /* This ensures the user list takes up available space */
+        }
+        .user-list li {
+            background-color: #b30000;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .logout {
+            background-color: #8a0000;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .logout:hover {
+            background-color: #5c0000;
+        }
+        .chat-message {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            padding-left: 15px;
+            padding-right: 10px;
+            border-bottom: 1px solid #ccc;
+            background-color: #f0f0f0; /* Light gray background */
+            border-radius: 8px; /* Rounded corners */
+            margin-bottom: 10px;
+        }
+        .timestamp {
+            font-size: 0.8em;
+            color: #777;
+            align-self: flex-end;
+        }
+        .link-preview {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .link-preview img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+        .link-preview .title {
+            font-weight: bold;
+            color: #333;
+        }
+        .link-preview .description {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        #logout-phone {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .right-pane {
+                display: none;
+            }
+            #logout-phone {
+                display: block;
+                background-color: #8a0000;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VibraChat</h1>
+        <button id="logout-phone">LogOut</button>
+    </header>
+    <div class="container">
+        <div class="left-pane" id="leftPane">
+            <div class="chat-box" id="chatBox">
+                <!-- Chat messages will be displayed here -->
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Type your message...">
+                <button id="chatSendButton" class="chat-send-button">Send</button>
+            </div>
+        </div>
+        <div class="right-pane">
+            <h2>Users</h2>
+            <ul class="user-list" id="userList"></ul>
+            <button class="logout" id="logoutButton">Logout</button>
+        </div>
+    </div>
+
+
+    <script>
+        console.log("%c Welcome to VibraChat!", "font-size: 50px; color: red; font-weight: bold;margin-left:14%;");
+
+        console.log("%c Chat with your friends.", "font-size: 20px; color: green; font-weight: bold; margin-left:30%;");
+    </script>
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDy8IYzLC9Wm60CPaSAgQUj7lIsQsy3lBY",
+            authDomain: "rmcs-2d752.firebaseapp.com",
+            databaseURL: "https://rmcs-2d752-default-rtdb.firebaseio.com",
+            projectId: "rmcs-2d752",
+            storageBucket: "rmcs-2d752.appspot.com",
+            messagingSenderId: "188615853008",
+            appId: "1:188615853008:web:f59c668e5d834ae1a8efd5",
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Check if user is logged in
+        let currentUser;
+        try {
+            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || !currentUser.name) {
+                throw new Error("User not logged in");
+            }
+        } catch (error) {
+            console.error(error.message);
+            window.location.href = 'login.html';
+        }
+
+        const userList = document.getElementById('userList');
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+        const chatSendButton = document.getElementById('chatSendButton');
+
+        // Listen for users in the database
+        const usersRef = database.ref('users');
+        usersRef.on('value', snapshot => {
+            const users = snapshot.val() || {};
+            userList.innerHTML = '';
+            Object.values(users).forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user.name;
+                userList.appendChild(li);
+            });
+        });
+
+        // Handle chat messages
+        const chatRef = database.ref('chats');
+        chatSendButton.addEventListener('click', () => {
+            const messageText = chatInput.value.trim();
+            if (messageText) {
+                chatRef.push({
+                    user: currentUser.name,
+                    text: messageText,
+                    timestamp: Date.now(),
+                });
+                chatInput.value = '';
+            }
+        });
+
+        chatInput.addEventListener('keypress', event => {
+            if (event.key === 'Enter') {
+                chatSendButton.click();
+            }
+        });
+
+        // Function to format the timestamp (date and time in dd-mm-yyyy hh:mm AM/PM format)
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp); 
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const year = date.getFullYear();
+            const hours = date.getHours();
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12; 
+
+            return `${"On "} ${day}-${month}-${year} ${"at "} ${formattedHours}:${minutes} ${period}`;
+        }
+
+        // Function to parse and identify links in messages
+        function parseMessageLinks(text) {
+            const urlPattern = /https?:\/\/[^\s]+/g;
+            const urls = text.match(urlPattern);
+            if (urls) {
+                urls.forEach(url => {
+                    // Make the URL clickable
+                    text = text.replace(url, `<a href="${url}" target="_blank">${url}</a>`);
+                    fetchLinkMetadata(url); // Fetch and display link metadata
+                });
+            }
+            return text;
+        }
+
+        async function fetchLinkMetadata(url) {
+            const apiUrl = `https://api.opengraph.io/api/og?url=${encodeURIComponent(url)}&apiKey=`; // Replace YOUR_API_KEY with your actual API key
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                if (data && (data.ogTitle || data.ogDescription || data.ogImage)) {
+                    // Display metadata
+                    console.log(data);
+                }
+            } catch (error) {
+                console.error('Error fetching link metadata:', error.message);
+            }
+        }
+
+        // Listen for new messages and display them
+        chatRef.on('child_added', snapshot => {
+            const message = snapshot.val();
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message');
+
+            // Format the message text
+            const messageText = document.createElement('p');
+            messageText.innerHTML = `${message.user}: ${parseMessageLinks(message.text)}`;
+            messageElement.appendChild(messageText);
+
+            // Format the timestamp (include date and time from Firebase)
+            const timestamp = document.createElement('span');
+            timestamp.classList.add('timestamp');
+            timestamp.textContent = formatTimestamp(message.timestamp); // This now includes both date and time from the Firebase message timestamp
+            messageElement.appendChild(timestamp);
+
+            // Add the message element to the chat
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+        });
+
+        // Logout Button
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            if (currentUser && currentUser.name) {
+                // Remove user data from Firebase
+                const userRef = database.ref('users').orderByChild('name').equalTo(currentUser.name);
+                userRef.once('value', snapshot => {
+                    snapshot.forEach(childSnapshot => {
+                        childSnapshot.ref.remove();
+                    });
+                });
+
+                // Clear localStorage and redirect to login
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        });
+
+        document.getElementById('logout-phone').addEventListener('click', () => {
+            if (currentUser && currentUser.name) {
+                // Remove user data from Firebase
+                const userRef = database.ref('users').orderByChild('name').equalTo(currentUser.name);
+                userRef.once('value', snapshot => {
+                    snapshot.forEach(childSnapshot => {
+                        childSnapshot.ref.remove();
+                    });
+                });
+
+                // Clear localStorage and redirect to login
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        });
+
+    </script>
+
+    <script src="script.js" type="module"></script>
+
+    <script src="restriction.js"></script>
+
+</body>
+</html>
