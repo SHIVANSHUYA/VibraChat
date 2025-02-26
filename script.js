@@ -11,7 +11,6 @@ import {
 // Firebase Configuration (Replace with your Firebase details)
 const firebaseConfig = {
   databaseURL: "https://vibra-info-device-logger-default-rtdb.firebaseio.com/",
-  apiKey: "AIzaSyC8AndDmPHc8eDF-cQWCDY2QWUQ8Git82k",
   authDomain: "vibra-info-device-logger.firebaseapp.com",
   projectId: "vibra-info-device-logger",
   storageBucket: "vibra-info-device-logger.firebasestorage.app",
