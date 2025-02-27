@@ -412,6 +412,46 @@
 
     </script>
 
+
+    <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js"></script>
+
+<script>
+// Firebase Configuration
+const Config = {
+    apiKey: "AIzaSyDy8IYzLC9Wm60CPaSAgQUj7lIsQsy3lBY",
+    authDomain: "rmcs-2d752.firebaseapp.com",
+    databaseURL: "https://rmcs-2d752-default-rtdb.firebaseio.com",
+    projectId: "rmcs-2d752",
+    storageBucket: "rmcs-2d752.appspot.com",
+    messagingSenderId: "188615853008",
+    appId: "1:188615853008:web:f59c668e5d834ae1a8efd5",
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Function to play the sound
+function playNotificationSound() {
+    const audio = new Audio("msg.mp3");
+    audio.play().catch(error => console.log("Audio play failed:", error));
+}
+
+// Listen for new messages in "chats" schema
+const chatsRef = database.ref("chats");
+
+chatsRef.on("child_added", (snapshot) => {
+    const newMessage = snapshot.val();
+    console.log("New message received:", newMessage);
+    playNotificationSound();
+});
+
+</script>
+
+
+
     <script src="script.js" type="module"></script>
 
     <script src="restriction.js"></script>
