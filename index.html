@@ -34,10 +34,14 @@
 <link rel="sitemap" type="application/xml" href="https://vibrachat.netlify.app/sitemap.xml" />
 
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 
 
 
     <style>
+
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -208,7 +212,73 @@
                 margin-top: 20px;
             }
         }
+        .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
 
+.popup-image {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+}
+
+.file-label {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.3s;
+    }
+
+    .file-label:hover {
+        background-color: #0056b3;
+    }
+
+    #imageUpload {
+        display: none; /* Hide default file input */
+    }
+
+    .upload-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.3s;
+    }
+
+    .upload-btn:hover {
+        background-color: #218838;
+    }
+
+    .file-name {
+        font-size: 12px;
+        color: #333;
+        width: 100px;
+        display: flex;
+        align-items: center;
+    }
 
     </style>
 </head>
@@ -221,9 +291,20 @@
         <div class="left-pane" id="leftPane">
             <div class="chat-box" id="chatBox">
                 <!-- Chat messages will be displayed here -->
+                <div id="chatContainer"></div>
             </div>
             <div class="chat-input-container">
                 <input type="text" id="chatInput" class="chat-input" placeholder="Type your message...">
+                <label for="imageUpload" class="file-label">
+                    <i class="fas fa-folder-open"></i>
+                </label>
+                <span class="file-name">No file</span>
+                <button class="upload-btn" onclick="uploadImage()">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <input type="file" id="imageUpload" accept="image/*" onchange="updateFileName()">
+
+
                 <button id="chatSendButton" class="chat-send-button">Send</button>
             </div>
         </div>
@@ -245,6 +326,17 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
+    <script type="module" src="./img.js"></script>
+
+<script>
+        function updateFileName() {
+        const fileInput = document.getElementById("imageUpload");
+        const fileNameDisplay = document.querySelector(".file-name");
+        fileNameDisplay.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
+    }
+</script>
+
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -357,25 +449,129 @@
 
         // Listen for new messages and display them
         chatRef.on('child_added', snapshot => {
-            const message = snapshot.val();
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('chat-message');
+    const message = snapshot.val();
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('chat-message');
 
-            // Format the message text
-            const messageText = document.createElement('p');
-            messageText.innerHTML = `${message.user}: ${parseMessageLinks(message.text)}`;
-            messageElement.appendChild(messageText);
+    // ✅ Sender Name (Display at the Top)
+    const senderName = document.createElement('strong');
+    senderName.textContent = message.user;
+    senderName.style.display = "block"; 
+    senderName.style.marginBottom = "5px";
+    senderName.style.marginLeft = "2px";
+    messageElement.appendChild(senderName);
 
-            // Format the timestamp (include date and time from Firebase)
-            const timestamp = document.createElement('span');
-            timestamp.classList.add('timestamp');
-            timestamp.textContent = formatTimestamp(message.timestamp); // This now includes both date and time from the Firebase message timestamp
-            messageElement.appendChild(timestamp);
+    // ✅ Timestamp Formatting
+    const timestamp = document.createElement('span');
+    timestamp.classList.add('timestamp');
+    timestamp.textContent = new Date(message.timestamp).toLocaleString();
+    timestamp.style.display = "block";
+    timestamp.style.color = "gray";
+    timestamp.style.fontSize = "12px";
 
-            // Add the message element to the chat
-            chatBox.appendChild(messageElement);
-            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+    // ✅ Message Content (Text or Image)
+    if (message.image) {
+        const imgElement = document.createElement('img');
+        imgElement.src = message.image; // Base64 image
+        imgElement.alt = "Uploaded Image";
+        imgElement.style.maxWidth = "200px"; 
+        imgElement.style.display = "block";
+        imgElement.style.marginTop = "5px";
+        messageElement.appendChild(imgElement);
+    } else if (message.text) {
+        const messageText = document.createElement('p');
+        messageText.innerHTML = parseMessageLinks(message.text);
+        messageElement.appendChild(messageText);
+    }
+
+    messageElement.appendChild(timestamp);
+    chatBox.appendChild(messageElement);
+
+    // ✅ Auto-scroll to the latest message
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+
+
+// Function to enable image zoom on click
+document.addEventListener("DOMContentLoaded", function () {
+    const chatBox = document.getElementById("chatBox");
+
+    // Check if the chatBox exists
+    if (!chatBox) {
+        console.error("Chat container not found.");
+        return;
+    }
+
+    chatBox.addEventListener("click", function (event) {
+        if (event.target.tagName === "IMG") {
+            openImagePopup(event.target.src);
+        }
+    });
+});
+
+// Function to open the image in a popup
+function openImagePopup(imageSrc) {
+    const popupOverlay = document.createElement("div");
+    popupOverlay.classList.add("popup-overlay");
+
+    const popupImage = document.createElement("img");
+    popupImage.src = imageSrc;
+    popupImage.classList.add("popup-image");
+
+    popupOverlay.appendChild(popupImage);
+    document.body.appendChild(popupOverlay);
+
+    // Close popup when clicking outside the image
+    popupOverlay.addEventListener("click", function () {
+        document.body.removeChild(popupOverlay);
+    });
+}
+
+
+
+document.addEventListener("paste", function (event) {
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+
+    for (let item of items) {
+        if (item.type.indexOf("image") === 0) {
+            const file = item.getAsFile();
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const base64Image = event.target.result;
+
+                // Upload to Firebase
+                uploadPastedImage(base64Image);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+});
+
+// Function to upload pasted image to Firebase
+function uploadPastedImage(base64Image) {
+    const chatRef = firebase.database().ref("chats").push();
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    chatRef
+
+        .set({
+            user: currentUser.name, // Replace with dynamic user data
+            image: base64Image,
+            timestamp: Date.now(),
+        })
+        .then(() => {
+            console.log("Pasted image uploaded successfully.");
+        })
+        .catch((error) => {
+            console.error("Error uploading pasted image: ", error);
         });
+}
+
+
+
 
         // Logout Button
         document.getElementById('logoutButton').addEventListener('click', () => {
@@ -436,6 +632,7 @@ const db = firebase.database();
 // Function to play the sound
 function playNotificationSound() {
     const audio = new Audio("msg.mp3");
+    audio.volume = 0.3; // Set volume to 50%
     audio.play().catch(error => console.log("Audio play failed:", error));
 }
 
@@ -455,17 +652,6 @@ chatsRef.on("child_added", (snapshot) => {
     <script src="script.js" type="module"></script>
 
     <script src="restriction.js"></script>
-
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SLB7N4BHBW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-SLB7N4BHBW');
-</script>
-    
 
 </body>
 </html>
