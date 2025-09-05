@@ -60,7 +60,6 @@
             display: flex;
             flex: 1;
             overflow: hidden;
-width:98%;
         }
         .left-pane {
             flex: 3;
@@ -357,7 +356,7 @@ width:98%;
         // Check if user is logged in
         let currentUser;
         try {
-            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            currentUser = JSON.parse(localStorage.getItem('personUsing'));
             if (!currentUser || !currentUser.name) {
                 throw new Error("User not logged in");
             }
@@ -432,7 +431,7 @@ width:98%;
         }
 
         async function fetchLinkMetadata(url) {
-            const apiUrl = `https://api.opengraph.io/api/og?url=${encodeURIComponent(url)}&apiKey=`; // Replace YOUR_API_KEY with your actual API key
+            const apiUrl = `https://api.opengraph.io/api/og?url=${encodeURIComponent(url)}&apiKey=42aa2f84-c97e-42e9-a388-f9a27c5f7387`; // Replace YOUR_API_KEY with your actual API key
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
@@ -614,7 +613,7 @@ function uploadPastedImage(base64Image) {
 <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js"></script>
 
-<script>
+<!-- <script>
 // Firebase Configuration
 const Config = {
     apiKey: "AIzaSyDy8IYzLC9Wm60CPaSAgQUj7lIsQsy3lBY",
@@ -633,7 +632,7 @@ const db = firebase.database();
 // Function to play the sound
 function playNotificationSound() {
     const audio = new Audio("msg.mp3");
-    audio.volume = 0.3; // Set volume to 50%
+    audio.volume = 0.1; // Set volume to 50%
     audio.play().catch(error => console.log("Audio play failed:", error));
 }
 
@@ -646,7 +645,7 @@ chatsRef.on("child_added", (snapshot) => {
     playNotificationSound();
 });
 
-</script>
+</script> -->
 
 
 
